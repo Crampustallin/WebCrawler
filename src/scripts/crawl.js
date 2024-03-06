@@ -26,7 +26,25 @@ const getURLsFromHTML = (htmlbody, baseURL) => {
 	return unNormalizedURLs;
 }
 
+const crawlPage = async (baseURL) => {
+	return new Promise(async (resolve, reject) => {
+		try {
+			let response = await fetch(baseURL);
+			if(!response.ok) {
+				throw new Error('Failed to fetch HTML');
+			} else if(response.headers.get('Content-Type').indexOf('text/html') === -1) {
+				throw new Error('Content type is not HTML');
+			}
+			let text = await response.text();
+			resolve(text);
+		} catch(err) {
+			reject(err);
+		}
+	});
+}
+
 module.exports = {
 	normalizeURL,
 	getURLsFromHTML,
+	crawlPage,
 }
