@@ -1,5 +1,5 @@
 const {test, expect} = require('@jest/globals');
-const {normalizeURL, getURLsFromHTML} = require('../src/crawl');
+const {normalizeURL, getURLsFromHTML} = require('../src/scripts/crawl');
 
 test('normalize function', () => {
 	expect(normalizeURL('https://blog.boot.dev/path?name=john&lname=johnjr')).toBe('blog.boot.dev/path');
