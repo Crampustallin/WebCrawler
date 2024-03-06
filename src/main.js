@@ -1,4 +1,5 @@
 const {startCrawl} = require('./scripts/crawl');
+const {printReport} = require('./scripts/report');
 const {argv} = require('node:process');
 
 let main = () => {
@@ -18,7 +19,7 @@ let main = () => {
 		}, 800); 
 
 		startCrawl(baseURL).then(text => {
-			console.log(text);
+			printReport(text);
 		}).catch(err => { 
 			console.log(err);
 		}).finally(() => intrvalId.unref());

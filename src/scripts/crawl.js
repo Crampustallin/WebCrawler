@@ -51,7 +51,7 @@ const crawlPage = async (baseURL, currentURL, pages) => {
 		}
 		htmlBody = await response.text();
 	} catch (err) {
-		console.log(err);
+		console.error(err);
 	}
 	const unNormalizedURLs = getURLsFromHTML(htmlBody, baseURL);
 	for (const href of unNormalizedURLs) {

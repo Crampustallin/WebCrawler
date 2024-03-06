@@ -1,4 +1,5 @@
 const {test, expect} = require('@jest/globals');
+const {sortPages} = require('../src/scripts/report');
 const {normalizeURL, getURLsFromHTML} = require('../src/scripts/crawl');
 
 test('normalize function', () => {
@@ -45,3 +46,15 @@ test('get unnormolized array', () => {
     </body>
 </html>`,'https://blog.boot.dev')).toEqual([]);
 });
+
+test('get sorted', () => {
+	const sorted = sortPages({"page3": 0, "page1": 99, "page2": 2});
+	const keys = Object.keys(sorted);
+	expect(keys).toEqual(["page1", "page2", "page3"]);
+});
+
+test('get sorted', () => {
+	const sorted = sortPages({"page1": 0, "page3": 10, "page4": 5 });
+	const keys = Object.keys(sorted);
+	expect(keys).toEqual(["page3", "page4","page1"]);
+})
