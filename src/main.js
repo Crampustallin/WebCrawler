@@ -1,4 +1,4 @@
-const {crawlPage} = require('./scripts/crawl');
+const {startCrawl} = require('./scripts/crawl');
 const {argv} = require('node:process');
 
 let main = () => {
@@ -15,15 +15,13 @@ let main = () => {
 			}
 			process.stdout.write('\x1B[2J\x1B[0f');
 			console.log(`Strting crawling at ${baseURL}${dots}`);
-		}, 800);
+		}, 800); 
 
-		crawlPage(baseURL).then(text => {
-			intrvalId.unref();
+		startCrawl(baseURL).then(text => {
 			console.log(text);
 		}).catch(err => { 
-			intrvalId.unref();
 			console.log(err);
-		});
+		}).finally(() => intrvalId.unref());
 
 	} else {
 		console.error('ERROR: It has to be one baseURL argument');

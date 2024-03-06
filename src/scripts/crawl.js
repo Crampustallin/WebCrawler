@@ -2,11 +2,11 @@ const jsdom = require('jsdom');
 const {JSDOM} = jsdom;
 const normalizeURL = (url) => {
 	const wholeUrl = new URL(url);
-	let pathname = wholeUrl.pathname;
-	if(pathname.endsWith('/')) {
+	let pathname = `${wholeUrl.hostname}${wholeUrl.pathname}`;
+	if(pathname.length > 0 && pathname.endsWith('/')) {
 		pathname = pathname.slice(0,-1);
 	}
-	return wholeUrl.hostname + pathname;
+	return pathname;
 }
 
 const getURLsFromHTML = (htmlbody, baseURL) => {
@@ -17,7 +17,7 @@ const getURLsFromHTML = (htmlbody, baseURL) => {
 		const href = a.href;
 		if(href.trim() !== '') {
 			try {
-				unNormalizedURLs[i] = (new URL(a.href, baseURL)).toString();
+				unNormalizedURLs[i] = (new URL(a.href, baseURL)).href;
 			} catch (err) {
 				console.error(err);
 			}
@@ -26,16 +26,44 @@ const getURLsFromHTML = (htmlbody, baseURL) => {
 	return unNormalizedURLs;
 }
 
-const crawlPage = async (baseURL) => {
+const crawlPage = async (baseURL, currentURL, pages) => {
+	let baseDomain = new URL(baseURL);
+	let currentDomain = new URL(currentURL, baseURL);
+	if(baseDomain.host !== currentDomain.host) {
+		return pages;
+	}
+	let normolized = normalizeURL(currentURL);
+	if(pages[normolized]) {
+		pages[normolized]++;
+		return pages;
+	}  
+	pages[normolized] = 1;
+	
+	let htmlBody = '';
+	try {
+		let response = await fetch(currentURL);
+		if(!response.ok) {
+			console.error('Failed to fetch HTML');
+			return pages;
+		} else if(response.headers.get('Content-Type').indexOf('text/html') === -1) {
+			console.error('Content type is not HTML');
+			return pages;
+		}
+		htmlBody = await response.text();
+	} catch (err) {
+		console.log(err);
+	}
+	const unNormalizedURLs = getURLsFromHTML(htmlBody, baseURL);
+	for (const href of unNormalizedURLs) {
+		pages = await crawlPage(baseURL, href, pages);
+	}
+	return pages;
+}
+
+const startCrawl = async (baseURL) => {
 	return new Promise(async (resolve, reject) => {
 		try {
-			let response = await fetch(baseURL);
-			if(!response.ok) {
-				throw new Error('Failed to fetch HTML');
-			} else if(response.headers.get('Content-Type').indexOf('text/html') === -1) {
-				throw new Error('Content type is not HTML');
-			}
-			let text = await response.text();
+			let text = await crawlPage(baseURL, baseURL, {});
 			resolve(text);
 		} catch(err) {
 			reject(err);
@@ -46,5 +74,5 @@ const crawlPage = async (baseURL) => {
 module.exports = {
 	normalizeURL,
 	getURLsFromHTML,
-	crawlPage,
+	startCrawl,
 }
