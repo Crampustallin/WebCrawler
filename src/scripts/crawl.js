@@ -1,12 +1,16 @@
 const jsdom = require('jsdom');
 const {JSDOM} = jsdom;
 const normalizeURL = (url) => {
+	try {
 	const wholeUrl = new URL(url);
 	let pathname = `${wholeUrl.hostname}${wholeUrl.pathname}`;
 	if(pathname.length > 0 && pathname.endsWith('/')) {
 		pathname = pathname.slice(0,-1);
 	}
 	return pathname;
+	} catch {
+		return undefined;
+	}
 }
 
 const getURLsFromHTML = (htmlbody, baseURL) => {
@@ -33,6 +37,9 @@ const crawlPage = async (baseURL, currentURL, pages) => {
 		return pages;
 	}
 	let normolized = normalizeURL(currentURL);
+	if(!normolized) {
+		return pages;
+	}
 	if(pages[normolized]) {
 		pages[normolized]++;
 		return pages;
