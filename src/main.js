@@ -15,7 +15,7 @@ let main = () => {
 				dots += '.';
 			}
 			process.stdout.write('\x1B[2J\x1B[0f');
-			console.log(`Strting crawling at ${baseURL}${dots}`);
+			console.log(`Crawling at ${baseURL}${dots}`);
 		}, 800); 
 
 		startCrawl(baseURL).then(text => {

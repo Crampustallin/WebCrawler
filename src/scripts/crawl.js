@@ -33,18 +33,21 @@ const getURLsFromHTML = (htmlbody, baseURL) => {
 const crawlPage = async (baseURL, currentURL, pages) => {
 	let baseDomain = new URL(baseURL);
 	let currentDomain = new URL(currentURL, baseURL);
-	if(baseDomain.host !== currentDomain.host) {
-		return pages;
-	}
 	let normolized = normalizeURL(currentURL);
+	
 	if(!normolized) {
 		return pages;
 	}
-	if(pages[normolized]) {
+
+	if(pages[normolized] > 0) {
 		pages[normolized]++;
 		return pages;
 	}  
 	pages[normolized] = 1;
+
+	if(baseDomain.host !== currentDomain.host) { // TODO: count external links. But only their main host. And print it in other section something like external links to etc.
+		return pages;
+	}
 	
 	let htmlBody = '';
 	try {

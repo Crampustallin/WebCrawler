@@ -2,7 +2,7 @@ let printReport = (pages) => {
 	console.log('Report is starting...');
 	let sortedPages = sortPages(pages);
 	for (const [page, value] of Object.entries(sortedPages)) {
-		console.log(`Found ${value} internal links to ${page}`);
+		console.log(`Found ${value} internal links to ${page}`); // TODO: print results to csv file rather than in console log
 	}
 }
 
