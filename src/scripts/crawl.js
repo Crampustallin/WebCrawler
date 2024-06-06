@@ -1,5 +1,6 @@
 const jsdom = require('jsdom');
 const {JSDOM} = jsdom;
+
 const normalizeURL = (url) => {
 	try {
 	const wholeUrl = new URL(url);
@@ -65,7 +66,8 @@ const crawlPage = async (baseURL, currentURL, pages) => {
 	}
 	const unNormalizedURLs = getURLsFromHTML(htmlBody, baseURL);
 	for (const href of unNormalizedURLs) {
-		pages = await crawlPage(baseURL, href, pages);
+		pages = crawlPage(baseURL, href, pages);
+		console.log(href)
 	}
 	return pages;
 }
